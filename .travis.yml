@@ -1,5 +1,5 @@
 os:
   - linux
 before_install:
-  - curl -L https://aka.ms/InstallAzureCli | bash
-  #- curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  #- curl -L https://aka.ms/InstallAzureCli | bash
+  - curl -LO kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
