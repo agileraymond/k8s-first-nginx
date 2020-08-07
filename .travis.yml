@@ -2,10 +2,31 @@ sudo: required
 
 env:
 - CHANGE_MINIKUBE_NONE_USER=true
+- RESOURCEGROUP=aksResourceGroup
+- CLUSTERNAME=kubedemo
 
 before_script:
+  # install kubectl 
   - curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
   - chmod +x ./kubectl
   - sudo mv ./kubectl /usr/local/bin/kubectl
   - kubectl version --client
-   
+  
+  # install azure cli
+  - curl -L https://aka.ms/InstallAzureCli | bash  
+
+  # create kubernetes cluster in azure aks
+  - az group create --name $RESOURCEGROUP --location eastus
+  - az aks create --resource-group $RESOURCEGROUP --name $CLUSTERNAME --node-count 1 --enable-addons monitoring --generate-ssh-keys
+  - az aks get-credentials --resource-group $RESOURCEGROUP --name $CLUSTERNAME
+  - kubectl get nodes
+
+install:
+  - kubectl apply -f app.yaml
+
+after_success:
+  # get service external ip
+  - EXPORT EP=$(kubectl get service my-nginx --query '[{EXTERNAL_IP}]' -o table
+
+  # use curl to verify service returns Hello Worl 
+  - curl $EP
